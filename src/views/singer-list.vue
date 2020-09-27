@@ -49,7 +49,7 @@ export default{
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .page-singer-list {
     .mint-cell-title img {
       margin-right: 10px

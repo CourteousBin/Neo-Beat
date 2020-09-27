@@ -22,11 +22,11 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-@import '../../assets/styles/reset.less';
+<style lang="scss" scoped>
+@import '../../assets/styles/reset.scss';
 .logo-container {
   padding: 10px;
-  background-color: @theme;
+  background-color: $theme;
   overflow: hidden;
   height: 51px;
   position: fixed;

@@ -24,7 +24,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 #app {
   .main {
     margin-top: 94px;

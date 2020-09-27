@@ -16,7 +16,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
   .rank-head {
     width: 100%;
     height: 43px;

@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .page-rank-info {
     .banner-wrap {
       width: 100%;

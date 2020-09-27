@@ -75,7 +75,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .comp-control-player {
     width: 100%;
     position: fixed;

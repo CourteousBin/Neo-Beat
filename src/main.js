@@ -6,16 +6,15 @@ import mint from 'mint-ui'
 import axios from 'axios'
 import 'mint-ui/lib/style.css'
 import './assets/styles/base.css'
-import './assets/styles/reset.less'
-
+import './assets/styles/reset.scss'
+// import { createPow } from "@textile/powergate-client"
 Vue.use(mint)
 Vue.prototype.$http = axios
 
-/* eslint-disable no-new */
-window.$app = new Vue({
-  el: '#app',
+new Vue({
   router,
   store,
   components: { App },
+  render: h => h(App),
   template: '<App />'
-})
+}).$mount('#app')

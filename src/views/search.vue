@@ -82,8 +82,8 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-@import '../assets/styles/reset.less';
+<style lang="scss" scoped>
+@import '../assets/styles/reset.scss';
   .page-search {
     .search-panel {
       padding: 10px;
@@ -120,7 +120,7 @@ export default {
       display: block;
       height: 100%;
       width: 18%;
-      background-color: @theme;
+      background-color: $theme;
       float: right;
       border-radius: 7px;
       color: #fff;
@@ -132,7 +132,7 @@ export default {
     }
     .search-list-title {
       padding: 10px;
-      color: @theme
+      color: $theme
     }
     .search-total {
       padding: 5px 10px;

@@ -71,7 +71,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="scss">
   .page-singer-info {
     .banner-wrap {
       width: 100%;

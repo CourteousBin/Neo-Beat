@@ -84,7 +84,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .page-plist-info {
     .banner-wrap {
       width: 100%;

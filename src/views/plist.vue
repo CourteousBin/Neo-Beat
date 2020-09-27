@@ -39,7 +39,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .page-plist {
     .mint-cell-text {
       position: absolute;

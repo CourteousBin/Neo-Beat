@@ -29,8 +29,8 @@ export default {
 }
 </script>
 
-<style lang="less">
-@import '../../assets/styles/reset.less';
+<style lang="scss">
+@import '../../assets/styles/reset.scss';
 .header-nav{
   position: fixed;
   top: 51px;
@@ -49,8 +49,8 @@ export default {
 
   .mint-navbar .mint-tab-item.is-selected{
     margin-bottom: 0;
-    color: @theme;
-    border-bottom: 3px solid @theme;
+    color: $theme;
+    border-bottom: 3px solid $theme;
   }
 }
 </style>
