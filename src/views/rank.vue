@@ -12,28 +12,21 @@
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
-import request from '@/request'
 export default {
   data () {
     return {
-      songList: []
+      songList: [
+        {
+          imgurl: 'http://admin.impool18.com:8080/ipfs/Qma1VLN4GriYzUbWhgsDhaJUscJ4wruP74qnE2qRfSo7nQ',
+          rankname: 'Neo Beat Rank',
+          rankid: 6666
+        }
+      ]
     }
   },
   methods: {
-    getList () {
-      Indicator.open({
-        text: '加载中...',
-        spinnerType: 'snake'
-      })
-      request('/rank/list&json=true').then(({ data }) => {
-        Indicator.close()
-        this.songList = data.rank.list
-      })
-    }
   },
   mounted () {
-    this.getList()
   }
 }
 </script>

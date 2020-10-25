@@ -5,6 +5,10 @@
       <mt-tab-item id="rank">排行</mt-tab-item>
       <mt-tab-item id="plist">歌单</mt-tab-item>
       <mt-tab-item id="singer">歌手</mt-tab-item>
+      <!-- <mt-tab-item id="newSongs">New song</mt-tab-item>
+      <mt-tab-item id="rank">Leaderboard</mt-tab-item>
+      <mt-tab-item id="plist">Song list</mt-tab-item>
+      <mt-tab-item id="singer">Singer</mt-tab-item> -->
     </mt-navbar>
   </div>
 </template>

@@ -14,27 +14,23 @@
 
 <script>
 import { Indicator } from 'mint-ui'
-import request from '@/request'
+
 export default {
   data () {
     return {
-      list: []
+      list: [
+        {
+          specialname: '每周推荐歌曲',
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmeiC7W6zCWwu7CK2NGBJX8YzF1SGHa82S3biBQMiYjbC5',
+          playcount: '141367',
+          specialid: '3167439'
+        }
+      ]
     }
   },
   methods: {
-    getList () {
-      Indicator.open({
-        text: '加载中...',
-        spinnerType: 'snake'
-      })
-      request('/plist/index&json=true').then(({ data }) => {
-        Indicator.close()
-        this.list = data.plist.list.info
-      })
-    }
   },
   mounted () {
-    this.getList()
   }
 }
 </script>

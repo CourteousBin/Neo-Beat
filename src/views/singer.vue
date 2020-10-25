@@ -1,9 +1,9 @@
 <template>
   <div class="page-singer">
     <div class="cell-group">
-      <div class="cell-item" @click="goRouter(88)">热门歌手</div>
+      <div class="cell-item" @click="goRouter(88)">Global singer</div>
     </div>
-    <div class="cell-group">
+    <!-- <div class="cell-group">
       <div class="cell-item" @click="goRouter(1)">华语男歌手</div>
       <div class="cell-item" @click="goRouter(2)">华语女歌手</div>
       <div class="cell-item" @click="goRouter(3)">华语组合</div>
@@ -17,7 +17,7 @@
       <div class="cell-item" @click="goRouter(7)">欧美男歌手</div>
       <div class="cell-item" @click="goRouter(8)">欧美女歌手</div>
       <div class="cell-item" @click="goRouter(9)">欧美组合</div>
-    </div>
+    </div> -->
   </div>
 </template>
 

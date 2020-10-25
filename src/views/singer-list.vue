@@ -14,16 +14,22 @@
 <script>
 import { Indicator } from 'mint-ui'
 import request from '@/request'
-export default{
+export default {
   data () {
     return {
-      list: []
+      list: [
+        {
+          singername: 'Public Domain Music',
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmY3UihcA14h2vfNbMjXsuQHwRLXBgKFtUJqnJBF7F3yYc',
+          singerid: '3520'
+        }
+      ]
     }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.$store.commit('showHead', true)
-      vm.$store.commit('setHeadStyle', {'background': '#5dc0b6'})
+      vm.$store.commit('setHeadStyle', { 'background': '#5dc0b6' })
       vm.getList()
     })
   },
@@ -38,12 +44,10 @@ export default{
         text: '加载中...',
         spinnerType: 'snake'
       })
-      const singerID = this.$route.params.id
-      request.get(`/singer/list/${singerID}?json=true`).then(({data}) => {
+      setTimeout(() => {
+        this.$store.commit('setHeadTitle', 'Global singer')
         Indicator.close()
-        this.list = data.singers.list.info
-        this.$store.commit('setHeadTitle', data.classname)
-      })
+      }, 300)
     }
   }
 }

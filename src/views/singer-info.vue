@@ -20,6 +20,8 @@
 import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
 import request from '@/request'
+import ipfsRequest from '@/ipfsRequest'
+import DefalutLogo from '@/assets/images/default.png'
 export default {
   mixins: [PLAY_AUDIO],
   data () {
@@ -32,14 +34,19 @@ export default {
       opacity: 0
     }
   },
+  computed: {
+    songImg () {
+      return DefalutLogo
+    }
+  },
   // 通过路由的before钩子解除router-view缓存限制
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.$store.commit('showHead', true)
-      vm.get()
+      vm.ipfsGetSongs()
       window.onscroll = () => {
         vm.opacity = window.pageYOffset / 250
-        vm.$store.commit('setHeadStyle', {background: `rgba(93,192,182,${vm.opacity})`})
+        vm.$store.commit('setHeadStyle', { background: `rgba(93,192,182,${vm.opacity})` })
       }
     })
   },
@@ -49,20 +56,24 @@ export default {
     next()
   },
   methods: {
-    get () {
+    ipfsGetSongs () {
       Indicator.open({
         text: '加载中...',
         spinnerType: 'snake'
       })
-      var infoID = this.$route.params.id
-      request.get(`/singer/info/${infoID}&json=true`).then(({data}) => {
-        Indicator.close()
-        const info = data.info
-        const songList = data.songs.list
-        this.imgurl = info.imgurl.replace('{size}', '400')
-        this.desc = info.intro
+      // 发送 POST 请求
+      ipfsRequest().then(res => {
+        let data = res.data.data[3]
+        let { host } = res.data
+        let songSrc = `${host}${data.cid}/`
+        this.songSrc = songSrc
+        let songList = data.song
         this.songList = songList
-        this.$store.commit('setHeadTitle', info.singername)
+        this.$store.commit('setHeadTitle', 'Public Domain Music')
+
+        this.imgurl = 'http://admin.impool18.com:8080/ipfs/QmY3UihcA14h2vfNbMjXsuQHwRLXBgKFtUJqnJBF7F3yYc'
+        this.desc = '公有领域（英语：Public Domain）是人类的一部分作品与一部分知识的总汇，可以包括文章、艺术品、音乐、科学、发明等等。对于领域内的知识财产，任何个人或团体都不具所有权益（所有权益通常由版权或专利体现）。这些知识发明属于公有文化遗产，任何人可以不受限制地使用和加工它们（此处不考虑有关安全、出口等的法律）。创立版权制度的初衷是借由给予创作者一段时期的专有权利作为（经济）刺激以鼓励作者从事创作。当专有权利期间届止，作品便进入公有领域。公有领域的作品由于没有专属权利人，因此公众有权自由使用它们。'
+        Indicator.close()
       })
     },
     toggleDesc () {

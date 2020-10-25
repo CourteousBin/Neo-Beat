@@ -10,7 +10,7 @@
 
     <mt-cell
       v-for="(song, index) in songList"
-      :title="song.filename"
+      :title="song.filename + ' - Public Domain Music'"
       @click.native="playAudio(index)"
       :key="index">
       <img src="@/assets/images/download_icon.png" width="20" height="20" />
@@ -21,50 +21,57 @@
 <script>
 import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
-import request from '@/request'
-import { createPow } from '@textile/powergate-client'
+import ipfsRequest from '@/ipfsRequest'
+import DefalutLogo from '@/assets/images/default.png'
+// import { createPow } from '@textile/powergate-client'
 
 export default {
   mixins: [PLAY_AUDIO],
   data () {
     return {
-      banners: [],
-      songList: []
+      banners: [
+        {
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmSarCeeyRQQypR5Lx3XZxLympaFkXBMWrtxaRQ9SLeS4Z'
+        },
+        {
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmU1LmsCKGYoXFDDMmyYKbQCJ3hvajeJXjBKXoHDciucic'
+        },
+        {
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmdNzARvFE4oc48wAnJArw5thJJeYCtoM7KnUMaAufUpxJ'
+        },
+        {
+          imgurl: 'http://admin.impool18.com:8080/ipfs/QmT5m3fyGZy1svAMCYkwh2xCxra5b89wTrJRz6ByvCxr1b'
+        }
+      ],
+      songList: [],
+      songSrc: ''
+    }
+  },
+  computed: {
+    songImg () {
+      return DefalutLogo
     }
   },
   methods: {
-    getSongs () {
+    ipfsGetSongs () {
       Indicator.open({
         text: '加载中...',
         spinnerType: 'snake'
       })
-      request({
-        url: '/?json=true',
-        method: 'get'
-      }).then(({ data }) => {
-        this.banners = data.banner
-        this.songList = data.data
+      // 发送 POST 请求
+      ipfsRequest().then(res => {
+        let data = res.data.data[0]
+        let { host } = res.data
+        let songSrc = `${host}${data.cid}/`
+        this.songSrc = songSrc
+        let songList = data.song
+        this.songList = songList
         Indicator.close()
       })
-    },
-    async connectIPFS () {
-      const host = 'http://Adi.impool18.com:6002' // or whatever powergate instance you want
-
-      const pow = createPow({ host })
-
-      const { status, messagesList } = await pow.health.check()
-
-      const { peersList } = await pow.net.peers()
-
-      // alert(status)
-      console.log(status)
-      console.log(messagesList)
-      console.log(peersList)
     }
   },
-  mounted () {
-    this.connectIPFS()
-    this.getSongs()
+  async mounted () {
+    await this.ipfsGetSongs()
   }
 }
 </script>

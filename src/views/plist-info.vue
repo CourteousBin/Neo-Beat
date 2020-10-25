@@ -31,6 +31,8 @@
 import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
 import request from '@/request'
+import ipfsRequest from '@/ipfsRequest'
+import DefalutLogo from '@/assets/images/default.png'
 export default {
   mixins: [PLAY_AUDIO],
   data () {
@@ -42,6 +44,11 @@ export default {
       desp: '',
       hideDesp: true,
       opacity: 0
+    }
+  },
+  computed: {
+    songImg () {
+      return DefalutLogo
     }
   },
   methods: {
@@ -61,6 +68,27 @@ export default {
         this.$store.commit('setHeadTitle', info.specialname)
       })
     },
+    ipfsGetSongs () {
+      Indicator.open({
+        text: '加载中...',
+        spinnerType: 'snake'
+      })
+      // 发送 POST 请求
+      ipfsRequest().then(res => {
+        // 歌单
+        this.imgurl = 'http://admin.impool18.com:8080/ipfs/QmeiC7W6zCWwu7CK2NGBJX8YzF1SGHa82S3biBQMiYjbC5'
+        this.desp = '每周，给你不一样的歌曲'
+        this.$store.commit('setHeadTitle', '每周歌单')
+
+        let data = res.data.data[2]
+        let { host } = res.data
+        let songSrc = `${host}${data.cid}/`
+        this.songSrc = songSrc
+        let songList = data.song
+        this.songList = songList
+        Indicator.close()
+      })
+    },
     toggleDesp () {
       this.hideDesp = !this.hideDesp
     }
@@ -69,7 +97,7 @@ export default {
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.$store.commit('showHead', true)
-      vm.getList()
+      vm.ipfsGetSongs()
       window.onscroll = () => {
         vm.opacity = window.pageYOffset / 250
         vm.$store.commit('setHeadStyle', { background: `rgba(93,192,182,${vm.opacity})` })

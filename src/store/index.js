@@ -18,12 +18,13 @@ const store = new Vuex.Store({
       currentLength: 0,
       songLength: 0,
       currentFlag: false,
-      lrc: ''
+      lrc: '',
+      path: '' // 路径
     },
     head: {
       toggle: false,
       title: '',
-      style: {'background': 'rgba(43,162,251,0)'}
+      style: { 'background': 'rgba(43,162,251,0)' }
     },
     audioLoading: false,
     detailPlayerFlag: false,
@@ -49,7 +50,7 @@ const store = new Vuex.Store({
         state.showPlayer = true // 首次进入应用时不可打开播放详情
       }
       state.listenCount++
-      state.audio = {...(state.audio), ...audio}
+      state.audio = { ...(state.audio), ...audio }
     },
     setAudioTime (state, time) {
       state.audio.currentLength = time
@@ -67,7 +68,7 @@ const store = new Vuex.Store({
       state.head.style = style
     },
     resetHeadStyle: state => {
-      state.head.style = {'background': 'rgba(43,162,251,0)'}
+      state.head.style = { 'background': 'rgba(43,162,251,0)' }
     },
     toggleAudioLoading: (state, flag) => {
       state.audioLoading = flag
@@ -82,65 +83,121 @@ const store = new Vuex.Store({
       state.isPlay = flag
     },
     setLrc: (state, lrc) => {
-      state.audio = {...state.audio, lrc}
+      state.audio = { ...state.audio, lrc }
     },
-    setListInfo: (state, {list, index}) => {
+    setListInfo: (state, { list, index }) => {
       state.listInfo.songList = list
       state.listInfo.songIndex = index
     }
   },
   actions: {
-    getSong ({commit, dispatch}, hash) {
-      if (hash) {
-        commit('toggleAudioLoading', true)
-        request.get(`/api/v1/song/get_song_info?cmd=playInfo&hash=${hash}`).then((res) => {
-          const data = res.data
-          const songUrl = data.url
-          if (songUrl === '') {
-            Toast('此歌曲暂无版权')
-          }
-          const imgUrl = data.imgUrl.replace('{size}', 400)
-          const title = data.songName
-          const songLength = data.timeLength
-          const singer = data.singerName
-          const currentLength = 0
-          const audio = { songUrl, imgUrl, title, singer, songLength, currentLength }
-          // dispatch('getLrc', hash, songLength * 1000)
-          commit('setAudio', audio)
-          commit('toggleAudioLoading', false)
-        })
+    getSong ({ commit, dispatch }, data) {
+      if (data) {
+        // commit('toggleAudioLoading', true)
+        // request.get(`/api/v1/song/get_song_info?cmd=playInfo&hash=${hash}`).then((res) => {
+        //   const data = res.data
+        const songUrl = data.url
+        //   if (songUrl === '') {
+        //     Toast('此歌曲暂无版权')
+        //   }
+        const imgUrl = data.imgUrl
+        const title = data.songName
+        const songLength = data.timeLength
+        const singer = data.singerName
+        const currentLength = 0
+        const path = data.path
+        const audio = { songUrl, imgUrl, title, singer, songLength, currentLength, path }
+        //   // dispatch('getLrc', hash, songLength * 1000)
+        commit('setAudio', audio)
+        commit('toggleAudioLoading', false)
+        commit('isPlay', true)
+        // })
       }
     },
-    getLrc ({commit}, { hash, timelength }) {
+    // getSong ({ commit, dispatch }, hash) {
+    //   if (hash) {
+    //     commit('toggleAudioLoading', true)
+    //     request.get(`/api/v1/song/get_song_info?cmd=playInfo&hash=${hash}`).then((res) => {
+    //       const data = res.data
+    //       const songUrl = data.url
+    //       if (songUrl === '') {
+    //         Toast('此歌曲暂无版权')
+    //       }
+    //       const imgUrl = data.imgUrl.replace('{size}', 400)
+    //       const title = data.songName
+    //       const songLength = data.timeLength
+    //       const singer = data.singerName
+    //       const currentLength = 0
+    //       const audio = { songUrl, imgUrl, title, singer, songLength, currentLength }
+    //       // dispatch('getLrc', hash, songLength * 1000)
+    //       commit('setAudio', audio)
+    //       commit('toggleAudioLoading', false)
+    //     })
+    //   }
+    // },
+    getLrc ({ commit }, { hash, timelength }) {
       if (hash && timelength) {
         request.get(`/app/i/krc.php?cmd=100&timelength=${timelength}&hash=${hash}`).then(res => {
           commit('setLrc', res.data)
         })
       }
     },
-    prev ({dispatch, state}) {
+    prev ({ dispatch, state }) {
       const list = state.listInfo.songList
+      console.log(list)
       if (state.listInfo.songIndex === 0) {
         state.listInfo.songIndex = list.length
       } else {
         state.listInfo.songIndex--
       }
-      const hash = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].hash
-      const timelength = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].duration * 1000
-      dispatch('getSong', hash)
-      dispatch('getLrc', {hash, timelength})
+      const info = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].filename
+      console.log(info)
+      let songUrl = `${this.state.audio.path}${info}`
+      let audio = new Audio(songUrl)
+      setTimeout(() => {
+        console.log(audio.duration)
+        let { duration } = audio
+        let songData = {
+          url: songUrl,
+          songName: list[state.listInfo.songIndex].filename,
+          singerName: 'Public Domain Music',
+          timeLength: duration,
+          imgUrl: this.state.audio.imgUrl,
+          path: this.state.audio.path
+        }
+        dispatch('getSong', songData)
+      }, 300)
+      // const timelength = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].duration * 1000
+      // dispatch('getSong', hash)
+      // dispatch('getLrc', { hash, timelength })
     },
-    next ({dispatch, state}) {
+    next ({ dispatch, state }) {
       const list = state.listInfo.songList
       if (state.listInfo.songIndex === list.length - 1) {
         state.listInfo.songIndex = 0
       } else {
         ++state.listInfo.songIndex
       }
-      const hash = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].hash
-      const timelength = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].duration * 1000
-      dispatch('getSong', hash)
-      dispatch('getLrc', {hash, timelength})
+      const info = list[state.listInfo.songIndex] && list[state.listInfo.songIndex].filename
+      console.log(info)
+      let songUrl = `${this.state.audio.path}${info}`
+      let audio = new Audio(songUrl)
+      setTimeout(() => {
+        console.log(audio.duration)
+        let { duration } = audio
+        let songData = {
+          url: songUrl,
+          songName: list[state.listInfo.songIndex].filename,
+          singerName: 'Public Domain Music',
+          timeLength: duration,
+          imgUrl: this.state.audio.imgUrl,
+          path: this.state.audio.path
+        }
+        dispatch('getSong', songData)
+        
+      }, 300)
+      // dispatch('getSong', hash)
+      // dispatch('getLrc', { hash, timelength })
     }
   }
 })

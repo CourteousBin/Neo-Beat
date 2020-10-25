@@ -3,26 +3,16 @@
     <div class="search-panel">
       <div class="search-input">
         <span class="search-icon"></span>
-        <input type="text" v-model="keyword" placeholder="歌手/歌名/拼音" @keydown.enter="search" />
+        <input type="text" v-model="keyword" placeholder="请输入歌名" @keydown.enter="search" />
       </div>
       <a href="javascript:;" @click="search" class="search-btn">搜索</a>
-    </div>
-
-    <div class="search-list" v-show="togglePanel">
-      <div class="search-list-title">最近热门</div>
-      <mt-cell
-        v-for="(item, index) in hotList"
-        :title="item.keyword"
-        @click.native="replaceInput(item.keyword)"
-        :key="index">
-      </mt-cell>
     </div>
 
     <div class="songs-list" v-show="!togglePanel">
       <div class="search-total">共有{{total}}条搜索结果</div>
       <mt-cell
         v-for="(item, index) in songList"
-        :title="item.filename"
+        :title="item.filename+ ' - Public Domain Music'"
         @click.native="playAudio(index)"
         :key="index">
         <img src="@/assets/images/download_icon.png" width="20" height="20" />
@@ -34,7 +24,9 @@
 <script>
 import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
-import request from '@/request'
+import axios from 'axios'
+import { Ls } from 'dayjs'
+import DefalutLogo from '@/assets/images/default.png'
 export default {
   mixins: [PLAY_AUDIO],
   data () {
@@ -43,11 +35,19 @@ export default {
       hotList: [],
       togglePanel: true,
       total: null,
-      songList: []
+      songList: [],
+      searchList: [],
+      host: '',
+      songSrc: ''
     }
   },
   created () {
-    this.getList()
+    // this.getList()
+  },
+  computed: {
+    songImg () {
+      return DefalutLogo
+    }
   },
   methods: {
     getList () {
@@ -55,10 +55,31 @@ export default {
         text: '加载中...',
         spinnerType: 'snake'
       })
-      this.$http.get('http://mobilecdn.impool18.com/api/v3/search/hot?format=json&plat=0&count=30').then(({ data }) => {
+      setTimeout(() => {
         Indicator.close()
-        this.hotList = data.data.info
-      })
+        this.hotList = [
+          {
+            jumpurl: 'https://activity.kugou.com/music-area/dist/#/mobile/home/35',
+            keyword: '新歌',
+            sort: 1
+          },
+          {
+            jumpurl: 'https://activity.kugou.com/music-area/dist/#/mobile/home/35',
+            keyword: 'Neo Beat Rank',
+            sort: 2
+          },
+          {
+            jumpurl: 'https://activity.kugou.com/music-area/dist/#/mobile/home/35',
+            keyword: '每周推荐',
+            sort: 3
+          },
+          {
+            jumpurl: 'https://activity.kugou.com/music-area/dist/#/mobile/home/35',
+            keyword: 'Public Domain Music',
+            sort: 4
+          }
+        ]
+      }, 300)
     },
     replaceInput (keyword) {
       this.keyword = keyword
@@ -66,17 +87,47 @@ export default {
     },
     search () {
       this.togglePanel = false
-      Indicator.open({
-        text: '加载中...',
-        spinnerType: 'snake'
-      })
-      if (this.keyword) {
-        this.$http.get(`http://mobilecdn.impool18.com/api/v3/search/song?format=json&keyword=${this.keyword}&page=1&pagesize=30&showtype=1`).then(({ data }) => {
-          this.songList = data.data.info
-          this.total = data.data.total
-          Indicator.close()
+
+      if (this.songList.length === 0) {
+        Indicator.open({
+          text: '加载中...',
+          spinnerType: 'snake'
         })
+        if (this.keyword) {
+          axios({
+            method: 'get',
+            url: 'http://admin.impool18.com:8080/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/full.json',
+            data: {}
+          }).then(res => {
+            let { data, host } = res.data
+            this.searchList = data
+            this.host = host
+            this.handleSearch()
+            Indicator.close()
+          })
+        }
+      } else {
+        this.handleSearch()
       }
+    },
+    handleSearch () {
+      let searchList = this.searchList
+      let key = this.keyword.substring(0, 3)
+
+      let result = searchList.filter((item, index) => {
+        return item.name === key
+      })
+      console.log(result)
+      let resultTwo = result[0].song.filter((item, index) => {
+        if (item.filename.includes(this.keyword)) {
+          console.log(item)
+          return item
+        }
+      })
+      this.total = resultTwo.length
+      this.songList = resultTwo
+      let songSrc = `${this.host}${result[0].cid}/`
+      this.songSrc = songSrc
     }
   }
 }

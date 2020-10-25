@@ -13,14 +13,15 @@
         <img :src="audio.imgUrl" />
       </div>
       <div class="detail-player-lrc">
-        <div class="lrc-content" :style="{marginTop: lrcOffset + 'px' }">
+        <p>{{audio.singer}}</p>
+        <!-- <div class="lrc-content" :style="{marginTop: lrcOffset + 'px' }">
           <p
             v-for="(item, index) in songLrc"
             :key="index"
             :class="{'wait-lrc': item.seconds >= audio.currentLength}">
             {{item.lrcContent}}
           </p>
-        </div>
+        </div> -->
       </div>
       <div class="detail-player-range container">
         <span class="detail-player-time">{{audio.currentLength | time}}</span>

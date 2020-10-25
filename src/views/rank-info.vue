@@ -22,7 +22,8 @@
 <script>
 import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
-import request from '@/request'
+import ipfsRequest from '@/ipfsRequest'
+import DefalutLogo from '@/assets/images/default.png'
 export default {
   mixins: [PLAY_AUDIO],
   data () {
@@ -31,6 +32,11 @@ export default {
       songList: [],
       updateTime: '',
       opacity: 0
+    }
+  },
+  computed: {
+    songImg () {
+      return DefalutLogo
     }
   },
   methods: {
@@ -52,20 +58,28 @@ export default {
       if (date < 10) date = '0' + date
       return `${year}-${month}-${date}`
     },
-    getList () {
+    ipfsGetSongs () {
       Indicator.open({
         text: '加载中...',
         spinnerType: 'snake'
       })
-      const infoID = this.$route.params.id
-      request.get(`/rank/info/?rankid=${infoID}&page=1&json=true`).then(({ data }) => {
-        Indicator.close()
-        const { info, songs } = data
-        const { banner7url, rankname } = info
-        const { list } = songs
-        this.imgurl = banner7url.replace('{size}', '400')
-        this.songList = list
+      // 发送 POST 请求
+      ipfsRequest().then(res => {
+        // 封面
+        const { banner7url, rankname } = {
+          banner7url: 'http://admin.impool18.com:8080/ipfs/Qma1VLN4GriYzUbWhgsDhaJUscJ4wruP74qnE2qRfSo7nQ',
+          rankname: 'Neo Beat Rank'
+        }
         this.$store.commit('setHeadTitle', rankname)
+        this.imgurl = banner7url
+
+        let data = res.data.data[1]
+        let { host } = res.data
+        let songSrc = `${host}${data.cid}/`
+        this.songSrc = songSrc
+        let songList = data.song
+        this.songList = songList
+        Indicator.close()
       })
     }
   },
@@ -73,10 +87,10 @@ export default {
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.$store.commit('showHead', true)
-      vm.getList()
+      vm.ipfsGetSongs()
       window.onscroll = () => {
         vm.opacity = window.pageYOffset / 250
-        vm.$store.commit('setHeadStyle', { background: `rgba(43,162,251,${vm.opacity})` })
+        vm.$store.commit('setHeadStyle', { background: `rgba(93, 192, 182,${vm.opacity})` })
       }
     })
   },
