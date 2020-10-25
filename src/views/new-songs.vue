@@ -59,7 +59,10 @@ export default {
         spinnerType: 'snake'
       })
       // 发送 POST 请求
-      ipfsRequest().then(res => {
+      ipfsRequest({
+        url: '/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/class.json',
+        method: 'get'
+      }).then(res => {
         let data = res.data.data[0]
         let { host } = res.data
         let songSrc = `${host}${data.cid}/`

@@ -74,7 +74,10 @@ export default {
         spinnerType: 'snake'
       })
       // 发送 POST 请求
-      ipfsRequest().then(res => {
+      ipfsRequest({
+        url: '/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/class.json',
+        method: 'get'
+      }).then(res => {
         // 歌单
         this.imgurl = 'http://admin.impool18.com:8080/ipfs/QmeiC7W6zCWwu7CK2NGBJX8YzF1SGHa82S3biBQMiYjbC5'
         this.desp = '每周，给你不一样的歌曲'

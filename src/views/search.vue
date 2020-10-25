@@ -26,6 +26,7 @@ import { Indicator } from 'mint-ui'
 import { PLAY_AUDIO } from '../mixins'
 import axios from 'axios'
 import { Ls } from 'dayjs'
+import ipfsRequest from '@/ipfsRequest'
 import DefalutLogo from '@/assets/images/default.png'
 export default {
   mixins: [PLAY_AUDIO],
@@ -94,10 +95,9 @@ export default {
           spinnerType: 'snake'
         })
         if (this.keyword) {
-          axios({
-            method: 'get',
-            url: 'http://admin.impool18.com:8080/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/full.json',
-            data: {}
+          ipfsRequest({
+            url: '/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/full.json',
+            method: 'get'
           }).then(res => {
             let { data, host } = res.data
             this.searchList = data

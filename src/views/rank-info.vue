@@ -64,7 +64,10 @@ export default {
         spinnerType: 'snake'
       })
       // 发送 POST 请求
-      ipfsRequest().then(res => {
+      ipfsRequest({
+        url: '/ipns/QmR2f2HMQy3JyP6XfH25BzJSEPGAqg9qTPwfX31mu2xPAe/class.json',
+        method: 'get'
+      }).then(res => {
         // 封面
         const { banner7url, rankname } = {
           banner7url: 'http://admin.impool18.com:8080/ipfs/Qma1VLN4GriYzUbWhgsDhaJUscJ4wruP74qnE2qRfSo7nQ',
